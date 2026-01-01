@@ -30,7 +30,7 @@ const words = [
   "Psychic Power","ESP","Telekinesis","Energy Blast",
 
   // Attack on Titan - Characters
-  "Eren","Mikasa","Armin","Levi","Historia","Reiner","Bertolt","Zeke","Jean","Connie","Sasha","Hange","Erwin","Pieck","Gabi","Falco","Galliard","Ymir","Floch"
+  "Eren","Mikasa","Armin","Levi","Historia","Reiner","Bertolt","Zeke","Jean","Connie","Sasha","Hange","Erwin","Pieck","Gabi","Falco","Galliard","Ymir","Floch",
   // AOT - Concepts
   "Titan","Colossal Titan","Armored Titan","Beast Titan","Attack Titan","Founding Titan","Survey Corps","Wall Maria","Wall Rose","Wall Sina","3DM Gear","Rumbling","Titan Serum","Titan Shifting","Titan Roar","Jeagerist",
 
@@ -62,7 +62,7 @@ const words = [
   // Chainsaw Man - Characters (anime only)
   "Denji","Power","Aki","Himeno","Kishibe","Makima","Kobeni",
   // Chainsaw Man - Abilities
-  "Chainsaw Transformation","Devil Contract","Blood Manipulation","Enhanced Strength","Regeneration","Gun Use","Chainsaw Sword","Demon Detection","Aura Sense","Devil Hunt"
+  "Chainsaw Transformation","Devil Contract","Blood Manipulation","Enhanced Strength","Regeneration","Gun Use","Chainsaw Sword","Demon Detection","Aura Sense","Devil Hunt",
 
   "Meliodas","Jotaro",
 ];
@@ -101,4 +101,5 @@ screen.onclick = () => {
     if (index > players) screen.textContent = "DONE";
   }
 };
+
 
