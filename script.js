@@ -1,10 +1,21 @@
-const startBtn = document.getElementById("start");
-const playersInput = document.getElementById("players");
-const screen = document.getElementById("screen");
-const setup = document.getElementById("setup");
+/************ FIREBASE CONFIG ************/
+/* 🔴 PASTE YOUR CONFIG HERE 🔴 */
+const firebaseConfig = {
+  apiKey: "AIzaSyC2Bt3zaOKLYePftEyosxmMW6zuyGE1_wE",
+  authDomain: "impsotet.firebaseapp.com",
+  databaseURL: "https://impsotet-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "impsotet",
+  storageBucket: "impsotet.firebasestorage.app",
+  messagingSenderId: "564051029540",
+  appId: "1:564051029540:web:8f44bedd115420d6d432b1"
+};
+/****************************************/
 
-const words = [
-  // Jujutsu Kaisen - Characters
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+/************ GAME DATA ************/
+const CHARACTERS = [
   "Yuji","Megumi","Nobara","Gojo","Sukuna","Mahito","Kento","Panda","Toge","Rika","Nanami","Jogo","Hanami","Toji","Choso","Yuta",
  
 
@@ -25,7 +36,7 @@ const words = [
 
 
   // Attack on Titan - Characters
-  "Eren","Mikasa","Armin","Levi","Historia","Reiner","Bertolt","Zeke","Jean","Connie","Sasha","Hange","Erwin","Pieck","Gabi","Falco","Galliard","Ymir","Floch","Esacanor",
+  "Eren","Mikasa","Armin","Levi","Historia","Reiner","Bertolt","Zeke","Jean","Connie","Sasha","Hange","Erwin","Pieck",  "Gabi","Falco","Galliard","Ymir","Floch","Esacanor",
 
 
   // Death Note - Characters
@@ -60,39 +71,124 @@ const words = [
   "Meliodas","Jotaro",
 ];
 
+let playerId = "p_" + Math.random().toString(36).substr(2, 9);
+let playerName = "";
+let roomId = "";
+let isHost = false;
 
-let players = 0;
-let impostor = 0;
-let index = 1;
-let word = "";
-let showing = false;
+/************ ROOM FUNCTIONS ************/
+function createRoom() {
+  playerName = nameInput.value || "Player";
+  roomId = Math.random().toString(36).substr(2, 5).toUpperCase();
+  isHost = true;
 
-// Step 3: Start button
-startBtn.onclick = () => {
-  players = Number(playersInput.value);
-  if (players < 3) return;
+  db.ref("rooms/" + roomId).set({
+    status: "lobby",
+    players: {}
+  });
 
-  impostor = Math.floor(Math.random() * players) + 1;
-  word = words[Math.floor(Math.random() * words.length)];
+  joinRoom(true);
+}
 
-  setup.classList.add("hidden");
-  screen.classList.remove("hidden");
-  screen.textContent = "Tap";
-};
+function joinRoom(host = false) {
+  playerName = nameInput.value || "Player";
+  roomId = host ? roomId : roomInput.value.toUpperCase();
+  if (!roomId) return alert("Enter room ID");
 
-// Step 4: Tap logic
-screen.onclick = () => {
-  if (index > players) return;
+  db.ref(`rooms/${roomId}/players/${playerId}`).set({
+    name: playerName
+  });
 
-  if (!showing) {
-    screen.textContent = (index === impostor) ? "IMPOSTOR" : word;
-    showing = true;
-  } else {
-    screen.textContent = "Tap";
-    showing = false;
-    index++;
-    if (index > players) screen.textContent = "DONE";
-  }
-};
+  menu.classList.add("hidden");
+  game.classList.remove("hidden");
+  roomDisplay.innerText = "Room: " + roomId;
+
+  listenToRoom();
+}
+
+/************ GAME LOGIC ************/
+function startGame() {
+  if (!isHost) return;
+
+  db.ref("rooms/" + roomId).once("value", snap => {
+    const room = snap.val();
+    const players = Object.keys(room.players);
+    if (players.length < 3) {
+      alert("Need at least 3 players");
+      return;
+    }
+
+    const impostor = players[Math.floor(Math.random() * players.length)];
+    const character = CHARACTERS[Math.floor(Math.random() * CHARACTERS.length)];
+
+    db.ref("rooms/" + roomId).update({
+      status: "started",
+      impostorId: impostor,
+      character: character
+    });
+  });
+}
+
+function restartGame() {
+  if (!isHost) return;
+
+  db.ref("rooms/" + roomId).update({
+    status: "lobby",
+    impostorId: null,
+    character: null
+  });
+
+  status.innerText = "Waiting for players...";
+  restartBtn.classList.add("hidden");
+  startBtn.classList.remove("hidden");
+}
+
+/************ LISTENERS ************/
+function listenToRoom() {
+  db.ref("rooms/" + roomId).on("value", snap => {
+    const room = snap.val();
+    if (!room) return;
+
+    if (room.status === "lobby") {
+      status.innerText = "Waiting for players...";
+      startBtn.style.display = isHost ? "inline-block" : "none";
+    }
+
+    if (room.status === "started") {
+      startBtn.classList.add("hidden");
+      restartBtn.classList.toggle("hidden", !isHost);
+
+      if (room.impostorId === playerId) {
+        status.innerText = "YOU ARE THE IMPOSTOR";
+      } else {
+        status.innerText = "CHARACTER: " + room.character;
+      }
+    }
+  });
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
