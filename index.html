@@ -1,18 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Impostor Game</title>
   <link rel="stylesheet" href="style.css">
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js"></script>
 </head>
 <body>
-  <div id="setup">
-    <input id="players" type="number" min="3" placeholder="Players">
-    <button id="start">Start</button>
-  </div>
 
-  <div id="screen" class="hidden"></div>
+<h1>Impostor Game</h1>
 
-  <script src="script.js"></script>
+<div id="menu">
+  <input id="nameInput" placeholder="Your name">
+  <button onclick="createRoom()">Create Room</button>
+  <input id="roomInput" placeholder="Room ID">
+  <button onclick="joinRoom()">Join Room</button>
+</div>
+
+<div id="game" class="hidden">
+  <h2 id="roomDisplay"></h2>
+  <p id="status"></p>
+  <button id="startBtn" onclick="startGame()">Start Game</button>
+  <button id="restartBtn" onclick="restartGame()" class="hidden">Restart</button>
+</div>
+
+<script src="game.js"></script>
 </body>
 </html>
+
