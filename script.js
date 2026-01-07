@@ -101,4 +101,3 @@ screen.onclick = () => {
     if (index > players) screen.textContent = "DONE";
   }
 };
-
